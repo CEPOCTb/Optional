@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Version>0.0.1</Version>
+		<TargetFrameworks>net48;net5.0;net6.0</TargetFrameworks>
+		<LangVersion>default</LangVersion>
+		<RootNamespace>PK.Optional.ResultExtensions</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PK.Optional.FunctionalExtensions\PK.Optional.FunctionalExtensions.csproj" />
+	  <ProjectReference Include="..\PK.Optional\PK.Optional.csproj" />
+	  <ProjectReference Include="..\PK.Result\PK.Result.csproj" />
+	</ItemGroup>
+
+</Project>
