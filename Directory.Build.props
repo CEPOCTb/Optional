@@ -4,7 +4,7 @@
 		<CurrentYear>$([System.DateTime]::Now.Year)</CurrentYear>
         <Copyright>Copyright © CEPOCTb $(CurrentYear)</Copyright>
         <Authors>CEPOCTb</Authors>
-		<PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/CEPOCTb/Optional</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/CEPOCTb/Optional</PackageProjectUrl>
 		<RepositoryType>Git</RepositoryType>

@@ -149,4 +149,30 @@ public static class Result
 	/// <param name="result"><see cref="IResult"/> instance</param>
 	/// <returns>True, if <see cref="IResult"/> instance is a failed result</returns>
 	public static bool IsFailed(this IResult result) => !(result.Success || result.Cancelled);
+
+	/// <summary>
+	/// Helper extension method to convert object to success result
+	/// </summary>
+	/// <param name="obj">Result value</param>
+	/// <typeparam name="T">Result value type</typeparam>
+	/// <returns>Value wrapped into <see cref="IResult{T}"/> instance</returns>
+	public static IResult<T> ToSuccessResult<T>(this T obj) => Success(obj);
+
+	/// <summary>
+	/// Helper extension method to convert exception to failed result
+	/// </summary>
+	/// <param name="e">Exception</param>
+	/// <typeparam name="T">Result value type</typeparam>
+	/// <returns>Failed <see cref="IResult{T}"/> instance</returns>
+	public static IResult<T> AsFailedResult<T>(this Exception e, string code = null, string description = null) =>
+		Failed<T>(Error.FromException(e, code, description));
+
+	/// <summary>
+	/// Helper extension method to convert exception to failed result
+	/// </summary>
+	/// <param name="e">Exception</param>
+	/// <returns>Failed <see cref="IResult"/> instance</returns>
+	public static IResult AsFailedResult(this Exception e, string code = null, string description = null) =>
+		Failed(Error.FromException(e, code, description));
+
 }
