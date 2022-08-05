@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PK.Result", "PK.Result\PK.R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PK.Optional.ResultExtensions", "PK.Optional.ResultExtensions\PK.Optional.ResultExtensions.csproj", "{69E997B5-CE18-4645-BE20-1FA88F504269}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PK.Result.Newtonsoft.Json", "PK.Result.Newtonsoft.Json\PK.Result.Newtonsoft.Json.csproj", "{A3D293F8-FD46-4715-8FAD-95C40DBAC360}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{69E997B5-CE18-4645-BE20-1FA88F504269}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69E997B5-CE18-4645-BE20-1FA88F504269}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69E997B5-CE18-4645-BE20-1FA88F504269}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3D293F8-FD46-4715-8FAD-95C40DBAC360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3D293F8-FD46-4715-8FAD-95C40DBAC360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3D293F8-FD46-4715-8FAD-95C40DBAC360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3D293F8-FD46-4715-8FAD-95C40DBAC360}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
