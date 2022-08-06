@@ -47,7 +47,7 @@ public class ResultConverter : JsonConverter<Result>
 		bool cancelled = false;
 		Error error = null;
 		object value = null;
-		Type type = objectType.IsGenericTypeDefinition ? objectType.GetGenericArguments()[0] : null;
+		Type type = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : null;
 
 		while (reader.Read() && reader.TokenType != JsonToken.EndObject)
 		{
