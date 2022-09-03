@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PK.Result;
 
@@ -100,4 +102,41 @@ public static class ResultExtension
 		value = null;
 		return false;
 	}
+	
+	/// <summary>
+	/// Projects each element of a sequence within success <see cref="PK.Result.Result{T}"/> into a new form and returns new <see cref="PK.Result.Result{TResult}"/>.
+	/// </summary>
+	/// <param name="result">Result of <see cref="IEnumerable{T}"/> to project from</param>
+	/// <param name="mapFunc">A transform function to apply to each element.</param>
+	/// <typeparam name="T">The type of the elements of <paramref name="result" /></typeparam>
+	/// <typeparam name="TResult">The type of the value returned by <paramref name="mapFunc" />.</typeparam>
+	/// <returns>
+	/// A new success <see cref="PK.Result.Result{TResult}"/> of <see cref="T:System.Collections.Generic.IEnumerable`1" /> whose elements are the result of invoking the transform function on each element of <paramref name="result" />,
+	/// or a non-success <see cref="PK.Result.Result{TResult}"/>.
+	/// </returns>
+	public static Result<IEnumerable<TResult>> Select<T, TResult>(this Result<IEnumerable<T>> result, Func<T, TResult> mapFunc) =>
+		mapFunc == null
+			? throw new ArgumentNullException(nameof(mapFunc))
+			: !result.IsSuccess
+				? result.MapNonSuccess<IEnumerable<TResult>>()
+				: result.Value.Select(mapFunc).ToSuccessResult();
+
+	/// <summary>
+	/// Maps <see cref="PK.Result.Result{T}"/> of type <typeparamref name="T"/> to <see cref="PK.Result.Result{TResult}"/> of type <typeparamref name="TResult"/>
+	/// using <paramref name="mapFunc"/> function
+	/// </summary>
+	/// <param name="result"><see cref="PK.Result.Result{T}"/> instance to map from</param>
+	/// <param name="mapFunc">A transform function to apply to a value.</param>
+	/// <typeparam name="T">The type of value of <paramref name="result" /></typeparam>
+	/// <typeparam name="TResult">The type of the value returned by <paramref name="mapFunc" />.</typeparam>
+	/// <returns>
+	/// A new success <see cref="PK.Result.Result{TResult}"/> whose value is the result of invoking the transform function on the value of <paramref name="result" />,
+	/// or a non-success <see cref="PK.Result.Result{TResult}"/>.
+	/// </returns>
+	public static Result<TResult> Map<T, TResult>(this Result<T> result, Func<T, TResult> mapFunc) =>
+		mapFunc == null
+			? throw new ArgumentNullException(nameof(mapFunc))
+			: result.IsSuccess
+				? mapFunc(result.Value).ToSuccessResult()
+				: result.MapNonSuccess<TResult>();
 }

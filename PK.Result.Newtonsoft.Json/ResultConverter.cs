@@ -1,25 +1,36 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace PK.Result.Newtonsoft.Json;
 
+/// <summary>
+///  JsonConverter for <see cref="Result"/> and <see cref="Result{T}"/> instances
+/// </summary>
 public class ResultConverter : JsonConverter<Result>
 {
+	private readonly NamingStrategy _namingStrategy;
+
+	public ResultConverter(NamingStrategy namingStrategy = null)
+	{
+		_namingStrategy = namingStrategy;
+	}
+
 	#region Overrides of JsonConverter<IResult>
 
 	/// <inheritdoc />
 	public override void WriteJson(JsonWriter writer, Result value, JsonSerializer serializer)
 	{
 		writer.WriteStartObject();
-		writer.WritePropertyName(nameof(Result.IsSuccess));
+		writer.WritePropertyName(_namingStrategy?.GetPropertyName(nameof(Result.IsSuccess), false) ?? nameof(Result.IsSuccess));
 		writer.WriteValue(value.IsSuccess);
 
 		if (!value.IsSuccess || serializer.DefaultValueHandling != DefaultValueHandling.Ignore)
 		{
-			writer.WritePropertyName(nameof(Result.Cancelled));
+			writer.WritePropertyName(_namingStrategy?.GetPropertyName(nameof(Result.IsCancelled), false) ?? nameof(Result.IsCancelled));
 			writer.WriteValue(value.IsCancelled);
 
-			writer.WritePropertyName(nameof(Result.Error));
+			writer.WritePropertyName(_namingStrategy?.GetPropertyName(nameof(Result.Error), false) ?? nameof(Result.Error));
 			serializer.Serialize(writer, value.Error);
 		}
 
@@ -27,7 +38,7 @@ public class ResultConverter : JsonConverter<Result>
 		{
 			if (value.TryGetValue(out var val))
 			{
-				writer.WritePropertyName("Value");
+				writer.WritePropertyName(_namingStrategy?.GetPropertyName("Value", false) ?? "Value");
 				serializer.Serialize(writer, val);
 			}
 		}
@@ -43,38 +54,34 @@ public class ResultConverter : JsonConverter<Result>
 			return null;
 		}
 
-		bool success = false;
-		bool cancelled = false;
+		var success = false;
+		var cancelled = false;
 		Error error = null;
 		object value = null;
-		Type type = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : null;
+		var type = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : null;
 
 		while (reader.Read() && reader.TokenType != JsonToken.EndObject)
 		{
 			if (reader.TokenType == JsonToken.PropertyName)
 			{
-				switch (reader.Path)
+				switch (reader.Path.ToLowerInvariant())
 				{
-					case "Success":
-					case "success":
+					case "issuccess":
 						{
 							success = reader.ReadAsBoolean() ?? false;
 							break;
 						}
-					case "Cancelled":
-					case "cancelled":
+					case "iscancelled":
 						{
 							cancelled = reader.ReadAsBoolean() ?? false;
 							break;
 						}
-					case "Error":
 					case "error":
 						{
 							reader.Read();
 							error = serializer.Deserialize<Error>(reader);
 							break;
 						}
-					case "Value":
 					case "value":
 						{
 							if (reader.Read() && type != null)
@@ -97,4 +104,3 @@ public class ResultConverter : JsonConverter<Result>
 
 	#endregion
 }
-
