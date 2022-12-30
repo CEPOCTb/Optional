@@ -8,7 +8,7 @@ public class StaticTests
 	[Fact]
 	public void Create()
 	{
-		var option = Option.Some(5);
+		var option = Optional.FromValue(5);
 
 		Assert.True(option.HasValue);
 		Assert.Equal(5, option.Value);
@@ -17,64 +17,64 @@ public class StaticTests
 	[Fact]
 	public void CreateNone()
 	{
-		var option = Option.None<int>();
+		var option = Optional.Empty<int>();
 
 		Assert.False(option.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => option.Value);
+		Assert.Throws<OptionalValueMissingException>(() => option.Value);
 	}
 
 	[Fact]
 	public void CreateExplicitNone()
 	{
-		var option = Option.None<int>();
+		var option = Optional.Empty<int>();
 
 		Assert.False(option.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => option.Value);
+		Assert.Throws<OptionalValueMissingException>(() => option.Value);
 	}
 
 	[Fact]
 	public void IsOption()
 	{
-		var option = Option.None<int>();
-		Assert.True(option.IsOption());
+		var option = Optional.Empty<int>();
+		Assert.True(option.IsOptional());
 
-		Assert.False(5.IsOption());
+		Assert.False(5.IsOptional());
 	}
 
 	[Fact]
 	public void HasValue()
 	{
-		var option = Option.Some(5);
-		Assert.True(Option.HasValue(option));
+		var option = Optional.FromValue(5);
+		Assert.True(Optional.HasValue(option));
 
-		option = Option.None<int>();
-		Assert.False(Option.HasValue(option));
+		option = Optional.Empty<int>();
+		Assert.False(Optional.HasValue(option));
 	}
 
 	[Fact]
 	public void HasValueThrows()
 	{
-		Assert.Throws<ObjectNotAnOptionException>(() => Option.HasValue(5));
+		Assert.Throws<ObjectNotAnOptionalException>(() => Optional.HasValue(5));
 	}
 
 	[Fact]
 	public void GetValue()
 	{
-		var option = Option.Some(5);
-		Assert.Equal(5, Option.GetValue(option));
+		var option = Optional.FromValue(5);
+		Assert.Equal(5, Optional.GetValue(option));
 	}
 
 	[Fact]
 	public void GetValueThrowsNonOption()
 	{
-		Assert.Throws<ObjectNotAnOptionException>(() => Option.GetValue(5));
+		Assert.Throws<ObjectNotAnOptionalException>(() => Optional.GetValue(5));
 	}
 
 	[Fact]
 	public void GetValueThrowsNone()
 	{
-		var option = Option.None<int>();
-		Assert.Throws<OptionValueMissingException>(() => Option.GetValue(option));
+		var option = Optional.Empty<int>();
+		Assert.Throws<OptionalValueMissingException>(() => Optional.GetValue(option));
 	}
 	
 }

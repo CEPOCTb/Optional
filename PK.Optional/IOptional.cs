@@ -1,6 +1,6 @@
 namespace PK.Optional;
 
-internal interface IOption
+internal interface IOptional
 {
 	bool HasValue { get; }
 

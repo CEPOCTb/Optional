@@ -6,6 +6,6 @@ namespace PK.Optional.Linq;
 
 public static class LinqExtensions
 {
-	public static Option<IEnumerable<TOut>> Select<TIn, TOut>(this Option<IEnumerable<TIn>> enumerable, Func<TIn, TOut> mapFunc) => 
-		!enumerable.HasValue ? Option.None<IEnumerable<TOut>>() : Option.Some(enumerable.Value.Select(mapFunc));
+	public static Optional<IEnumerable<TOut>> Select<TIn, TOut>(this Optional<IEnumerable<TIn>> enumerable, Func<TIn, TOut> mapFunc) => 
+		!enumerable.HasValue ? Optional.Empty<IEnumerable<TOut>>() : Optional.FromValue(enumerable.Value.Select(mapFunc));
 }

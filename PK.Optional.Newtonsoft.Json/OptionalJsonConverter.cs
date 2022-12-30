@@ -3,18 +3,18 @@ using Newtonsoft.Json;
 
 namespace PK.Optional.Newtonsoft.Json;
 
-public class OptionJsonConverter : JsonConverter
+public class OptionalJsonConverter : JsonConverter
 {
-	private static readonly Type OptionType = typeof(Option<>);
+	private static readonly Type OptionType = typeof(Optional<>);
 	
-	public static readonly OptionJsonConverter Instance = new();
+	public static readonly OptionalJsonConverter Instance = new();
 	
 	#region Overrides of JsonConverter
 
 	/// <inheritdoc />
 	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 	{
-		writer.WriteValue(Option.GetValue(value));
+		writer.WriteValue(Optional.GetValue(value));
 	}
 
 	/// <inheritdoc />
@@ -22,7 +22,7 @@ public class OptionJsonConverter : JsonConverter
 		Activator.CreateInstance(OptionType.MakeGenericType(objectType.GetGenericArguments()), reader.Value);
 
 	/// <inheritdoc />
-	public override bool CanConvert(Type objectType) => objectType.IsOption();
+	public override bool CanConvert(Type objectType) => objectType.IsOptional();
 	
 	
 	#endregion

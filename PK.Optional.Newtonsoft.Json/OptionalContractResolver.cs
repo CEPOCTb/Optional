@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace PK.Optional.Newtonsoft.Json;
 
-public class OptionContractResolver : DefaultContractResolver
+public class OptionalContractResolver : DefaultContractResolver
 {
 	#region Overrides of DefaultContractResolver
 
@@ -12,12 +12,12 @@ public class OptionContractResolver : DefaultContractResolver
 	protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
 	{
 		var prop = base.CreateProperty(member, memberSerialization);
-		if (!prop.PropertyType.IsOption())
+		if (!prop.PropertyType.IsOptional())
 		{
 			return prop;
 		}
 
-		prop.Converter = OptionJsonConverter.Instance;
+		prop.Converter = OptionalJsonConverter.Instance;
 		prop.DefaultValueHandling = DefaultValueHandling.Ignore;
 
 		return prop;

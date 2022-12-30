@@ -4,30 +4,30 @@ namespace PK.Optional.FunctionalExtensions;
 
 public static class Functional
 {
-	public static Option<T> Some<T>(this T value) => Option.Some(value);
-	public static Option<T> None<T>(this T value) => Option.None<T>();
-	public static Option<T> None<T>() => Option.None<T>();
+	public static Optional<T> Some<T>(this T value) => Optional.FromValue(value);
+	public static Optional<T> None<T>(this T value) => Optional.Empty<T>();
+	public static Optional<T> None<T>() => Optional.Empty<T>();
 
-	public static T ValueOrDefault<T>(this Option<T> option) => option.HasValue ? option.Value : default;
-	public static T ValueOr<T>(this Option<T> option, T fallbackValue) => option.HasValue ? option.Value : fallbackValue;
-	public static T ValueOr<T>(this Option<T> option, Func<T> fallbackValueFunc) =>
+	public static T ValueOrDefault<T>(this Optional<T> option) => option.HasValue ? option.Value : default;
+	public static T ValueOr<T>(this Optional<T> option, T fallbackValue) => option.HasValue ? option.Value : fallbackValue;
+	public static T ValueOr<T>(this Optional<T> option, Func<T> fallbackValueFunc) =>
 		fallbackValueFunc == null
 			? throw new ArgumentNullException(nameof(fallbackValueFunc))
 			: option.HasValue ? option.Value : fallbackValueFunc();
 	
-	public static Option<T> Or<T>(this Option<T> option, T anotherValue) => option.HasValue ? option : anotherValue.Some();
-	public static Option<T> Or<T>(this Option<T> option, Func<T> anotherValueFunc) =>
+	public static Optional<T> Or<T>(this Optional<T> option, T anotherValue) => option.HasValue ? option : anotherValue.Some();
+	public static Optional<T> Or<T>(this Optional<T> option, Func<T> anotherValueFunc) =>
 		anotherValueFunc == null
 			? throw new ArgumentNullException(nameof(anotherValueFunc))
 			: option.HasValue ? option : anotherValueFunc().Some();
 	
-	public static Option<T> Else<T>(this Option<T> option, Option<T> anotherOption) => option.HasValue ? option : anotherOption;
-	public static Option<T> Else<T>(this Option<T> option, Func<Option<T>> anotherOptionFunc) =>
+	public static Optional<T> Else<T>(this Optional<T> option, Optional<T> anotherOption) => option.HasValue ? option : anotherOption;
+	public static Optional<T> Else<T>(this Optional<T> option, Func<Optional<T>> anotherOptionFunc) =>
 		anotherOptionFunc == null
 			? throw new ArgumentNullException(nameof(anotherOptionFunc))
 			: option.HasValue ? option : anotherOptionFunc();
 
-	public static TResult Match<T, TResult>(this Option<T> option, Func<T, TResult> someFunc, Func<TResult> noneFunc)
+	public static TResult Match<T, TResult>(this Optional<T> option, Func<T, TResult> someFunc, Func<TResult> noneFunc)
 	{
 		if (someFunc == null)
 		{
@@ -42,7 +42,7 @@ public static class Functional
 		return option.HasValue ? someFunc(option.Value) : noneFunc();
 	}
 
-	public static void Match<T>(this Option<T> option, Action<T> someAction, Action noneAction)
+	public static void Match<T>(this Optional<T> option, Action<T> someAction, Action noneAction)
 	{
 		if (someAction == null)
 		{
@@ -64,7 +64,7 @@ public static class Functional
 		}
 	}
 
-	public static void MatchSome<T>(this Option<T> option, Action<T> someAction)
+	public static void MatchSome<T>(this Optional<T> option, Action<T> someAction)
 	{
 		if (someAction == null)
 		{
@@ -77,7 +77,7 @@ public static class Functional
 		}
 	}
 
-	public static void MatchNone<T>(this Option<T> option, Action noneAction)
+	public static void MatchNone<T>(this Optional<T> option, Action noneAction)
 	{
 		if (noneAction == null)
 		{
@@ -90,24 +90,24 @@ public static class Functional
 		}
 	}
 
-	public static Option<TResult> Map<T, TResult>(this Option<T> option, Func<T, TResult> mapFunc) =>
+	public static Optional<TResult> Map<T, TResult>(this Optional<T> option, Func<T, TResult> mapFunc) =>
 		mapFunc == null
 			? throw new ArgumentNullException(nameof(mapFunc))
 			: option.Match(val => Some(mapFunc(val)), None<TResult>);
 
-	public static Option<TResult> FlatMap<T, TResult>(this Option<T> option, Func<T, Option<TResult>> mapFunc) =>
+	public static Optional<TResult> FlatMap<T, TResult>(this Optional<T> option, Func<T, Optional<TResult>> mapFunc) =>
 		mapFunc == null
 			? throw new ArgumentNullException(nameof(mapFunc))
 			: option.Match(mapFunc, None<TResult>);
 
-	public static Option<T> Filter<T>(this Option<T> option, bool condition) =>
+	public static Optional<T> Filter<T>(this Optional<T> option, bool condition) =>
 		!option.HasValue || condition ? option : None<T>();
 
-	public static Option<T> Filter<T>(this Option<T> option, Func<T, bool> predicate) =>
+	public static Optional<T> Filter<T>(this Optional<T> option, Func<T, bool> predicate) =>
 		predicate == null
 			? throw new ArgumentNullException(nameof(predicate))
 			: !option.HasValue || predicate(option.Value) ? option : None<T>();
 
-	public static Option<T> NotNull<T>(this Option<T> option) =>
+	public static Optional<T> NotNull<T>(this Optional<T> option) =>
 		!option.HasValue || option.GetValue() != null ? option : None<T>();
 }

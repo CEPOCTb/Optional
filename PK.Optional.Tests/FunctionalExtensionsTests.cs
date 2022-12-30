@@ -22,7 +22,7 @@ public class FunctionalExtensionsTests
 		var option = 5.None();
 
 		Assert.False(option.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => option.Value);
+		Assert.Throws<OptionalValueMissingException>(() => option.Value);
 	}
 
 	[Fact]
@@ -31,7 +31,7 @@ public class FunctionalExtensionsTests
 		var option = Functional.None<int>();
 
 		Assert.False(option.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => option.Value);
+		Assert.Throws<OptionalValueMissingException>(() => option.Value);
 	}
 
 	[Fact]
@@ -368,7 +368,7 @@ public class FunctionalExtensionsTests
 		var option = 5.None();
 		var mapped = option.Map(o => o.ToString());
 		Assert.False(mapped.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => mapped.Value);
+		Assert.Throws<OptionalValueMissingException>(() => mapped.Value);
 	}
 
 	[Fact]
@@ -380,7 +380,7 @@ public class FunctionalExtensionsTests
 		option = 5.None();
 		var mapped = option.Map(o => o.ToString());
 		Assert.False(mapped.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => mapped.Value);
+		Assert.Throws<OptionalValueMissingException>(() => mapped.Value);
 	}
 
 	[Fact]
@@ -398,7 +398,7 @@ public class FunctionalExtensionsTests
 		var option = 5.None();
 		var mapped = option.FlatMap(o => o.ToString().Some());
 		Assert.False(mapped.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => mapped.Value);
+		Assert.Throws<OptionalValueMissingException>(() => mapped.Value);
 	}
 
 	[Fact]
@@ -410,7 +410,7 @@ public class FunctionalExtensionsTests
 		option = 5.None();
 		var mapped = option.FlatMap(o => o.ToString().Some());
 		Assert.False(mapped.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => mapped.Value);
+		Assert.Throws<OptionalValueMissingException>(() => mapped.Value);
 	}
 
 	[Fact]
@@ -423,16 +423,16 @@ public class FunctionalExtensionsTests
 
 		filtered = option.Filter(false);
 		Assert.False(filtered.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => filtered.Value);
+		Assert.Throws<OptionalValueMissingException>(() => filtered.Value);
 
 		option = 5.None();
 		filtered = option.Filter(true);
 		Assert.False(filtered.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => filtered.Value);
+		Assert.Throws<OptionalValueMissingException>(() => filtered.Value);
 
 		filtered = option.Filter(false);
 		Assert.False(filtered.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => filtered.Value);
+		Assert.Throws<OptionalValueMissingException>(() => filtered.Value);
 	}
 
 	[Fact]
@@ -461,7 +461,7 @@ public class FunctionalExtensionsTests
 				return false;
 			});
 		Assert.False(filtered.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => filtered.Value);
+		Assert.Throws<OptionalValueMissingException>(() => filtered.Value);
 		Assert.Equal(1, called);
 
 		option = 5.None();
@@ -474,7 +474,7 @@ public class FunctionalExtensionsTests
 				return true;
 			});
 		Assert.False(filtered.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => filtered.Value);
+		Assert.Throws<OptionalValueMissingException>(() => filtered.Value);
 		Assert.Equal(0, called);
 
 		called = 0;
@@ -486,7 +486,7 @@ public class FunctionalExtensionsTests
 				return false;
 			});
 		Assert.False(filtered.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => filtered.Value);
+		Assert.Throws<OptionalValueMissingException>(() => filtered.Value);
 		Assert.Equal(0, called);
 	}
 
@@ -501,16 +501,16 @@ public class FunctionalExtensionsTests
 		option = "5".None();
 		notnull = option.NotNull();
 		Assert.False(notnull.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => notnull.Value);
+		Assert.Throws<OptionalValueMissingException>(() => notnull.Value);
 
 		option = ((string)null).Some();
 		notnull = option.NotNull();
 		Assert.False(notnull.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => notnull.Value);
+		Assert.Throws<OptionalValueMissingException>(() => notnull.Value);
 
 		option = ((string)null).None();
 		notnull = option.NotNull();
 		Assert.False(notnull.HasValue);
-		Assert.Throws<OptionValueMissingException>(() => notnull.Value);
+		Assert.Throws<OptionalValueMissingException>(() => notnull.Value);
 	}
 }
