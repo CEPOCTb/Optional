@@ -50,6 +50,7 @@ public readonly record struct Optional<T> : IOptional, IComparable<Optional<T>>
 public static class Optional
 {
 	public static bool IsOptional(this object o) => o is IOptional;
+	public static bool IsOptional(this Type t) => typeof(IOptional).IsAssignableFrom(t);
 	public static bool HasValue(object o) => o is IOptional option ? option.HasValue : throw new ObjectNotAnOptionalException();
 	public static object GetValue(object o) => o is IOptional option ? option.GetValue() : throw new ObjectNotAnOptionalException();
 
