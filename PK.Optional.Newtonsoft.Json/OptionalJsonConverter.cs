@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace PK.Optional.Newtonsoft.Json;
 
@@ -19,7 +20,7 @@ public class OptionalJsonConverter : JsonConverter
 
 	/// <inheritdoc />
 	public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) =>
-		Activator.CreateInstance(OptionType.MakeGenericType(objectType.GetGenericArguments()), reader.Value);
+		Activator.CreateInstance(OptionType.MakeGenericType(objectType.GetGenericArguments()), serializer.Deserialize(reader, objectType.GetGenericArguments().First()));
 
 	/// <inheritdoc />
 	public override bool CanConvert(Type objectType) => objectType.IsOptional();
