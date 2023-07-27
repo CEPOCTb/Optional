@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace PK.Result;
 
@@ -28,5 +29,11 @@ public class ResultException : Exception
 	public ResultException(string code, string message, Exception innerException) : base(message, innerException)
 	{
 		Code = code;
+	}
+
+	/// <inheritdoc />
+	protected ResultException(SerializationInfo info, StreamingContext context) : base(info, context)
+	{
+		Code = info.GetValue(nameof(Code), typeof(string)) as string;
 	}
 }

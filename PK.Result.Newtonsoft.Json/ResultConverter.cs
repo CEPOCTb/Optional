@@ -30,8 +30,8 @@ public class ResultConverter : JsonConverter<Result>
 			writer.WritePropertyName(_namingStrategy?.GetPropertyName(nameof(Result.IsCancelled), false) ?? nameof(Result.IsCancelled));
 			writer.WriteValue(value.IsCancelled);
 
-			writer.WritePropertyName(_namingStrategy?.GetPropertyName(nameof(Result.Error), false) ?? nameof(Result.Error));
-			serializer.Serialize(writer, value.Error);
+			writer.WritePropertyName(_namingStrategy?.GetPropertyName(nameof(Result.Errors), false) ?? nameof(Result.Errors));
+			serializer.Serialize(writer, value.Errors);
 		}
 
 		if (value.IsSuccess)
@@ -76,7 +76,7 @@ public class ResultConverter : JsonConverter<Result>
 							cancelled = reader.ReadAsBoolean() ?? false;
 							break;
 						}
-					case "error":
+					case "errors":
 						{
 							reader.Read();
 							error = serializer.Deserialize<Error>(reader);

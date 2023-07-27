@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PK.Result;
 
@@ -18,9 +20,9 @@ public abstract class Result
 	public abstract bool IsCancelled { get; }
 
 	/// <summary>
-	/// Error information
+	/// Errors information
 	/// </summary>
-	public abstract IError Error { get; }
+	public abstract IReadOnlyCollection<IError> Errors { get; }
 
 	/// <summary>
 	/// Get value type contained by result, if any
@@ -79,6 +81,50 @@ public abstract class Result
 	/// <returns>Failed result</returns>
 	public static Result<T> Failed<T>(IError error) => new FailedResult<T>(error);
 
+	/// <summary>
+	/// Returns failed result
+	/// </summary>
+	/// <param name="errors">Errors, which describes failure reason</param>
+	/// <returns>Failed result</returns>
+	public static Result Failed(IEnumerable<IError> errors) => new FailedResult(errors);
+
+	/// <summary>
+	/// Returns failed result
+	/// </summary>
+	/// <param name="errors">Errors, which describes failure reason</param>
+	/// <typeparam name="T">Expected result value type</typeparam>
+	/// <returns>Failed result</returns>
+	public static Result<T> Failed<T>(IEnumerable<IError> errors) => new FailedResult<T>(errors);
+
+	/// <summary>
+	/// Returns failed result
+	/// </summary>
+	/// <param name="errors">Errors, which describes failure reason</param>
+	/// <returns>Failed result</returns>
+	public static Result Failed(params IError[] errors) => new FailedResult(errors);
+
+	/// <summary>
+	/// Returns failed result
+	/// </summary>
+	/// <param name="errors">Errors, which describes failure reason</param>
+	/// <typeparam name="T">Expected result value type</typeparam>
+	/// <returns>Failed result</returns>
+	public static Result<T> Failed<T>(params IError[] errors) => new FailedResult<T>(errors);
+
+	/// <summary>
+	/// Returns failed result from exception
+	/// </summary>
+	/// <param name="exception">Exception</param>
+	/// <returns>Failed result</returns>
+	public static Result Failed(Exception exception) => new FailedResult(Error.FromException(exception));
+
+	/// <summary>
+	/// Returns failed result from exception
+	/// </summary>
+	/// <param name="exception">Exception</param>
+	/// <typeparam name="T">Expected result value type</typeparam>
+	/// <returns>Failed result</returns>
+	public static Result<T> Failed<T>(Exception exception) => new FailedResult<T>(Error.FromException(exception));
 
 	/// <summary>
 	/// Returns failed result
@@ -94,6 +140,22 @@ public abstract class Result
 		}
 
 		return Activator.CreateInstance(typeof(FailedResult<>).MakeGenericType(resultType), error) as Result;
+	}
+
+	/// <summary>
+	/// Returns failed result
+	/// </summary>
+	/// <param name="error">Error, which describes failure reason</param>
+	/// <param name="resultType">Result type</param>
+	/// <returns>Failed result</returns>
+	public static Result Failed(IEnumerable<IError> errors, Type resultType)
+	{
+		if (resultType == null)
+		{
+			throw new ArgumentNullException(nameof(resultType), "Can't determine type. resultType must be specified");
+		}
+
+		return Activator.CreateInstance(typeof(FailedResult<>).MakeGenericType(resultType), errors) as Result;
 	}
 	
 	/// <summary>
@@ -154,14 +216,14 @@ internal sealed class SuccessResult : Result
 
 	public override bool IsSuccess => true;
 	public override bool IsCancelled => false;
-	public override IError Error => null;
+	public override IReadOnlyCollection<IError> Errors => null;
 }
 
 internal sealed class SuccessResult<T> : Result<T>
 {
 	public override bool IsSuccess => true;
 	public override bool IsCancelled => false;
-	public override IError Error => null;
+	public override IReadOnlyCollection<IError> Errors => null;
 	public override T Value { get; }
 
 	public SuccessResult(T value) => Value = value;
@@ -171,35 +233,37 @@ internal sealed class FailedResult : Result
 {
 	public override bool IsSuccess => false;
 	public override bool IsCancelled => false;
-	public override IError Error { get; }
+	public override IReadOnlyCollection<IError> Errors { get; }
 
-	public FailedResult(IError error) => Error = error;
+	public FailedResult(IError error) => Errors = new []{ error };
+	public FailedResult(IEnumerable<IError> errors) => Errors = errors.ToArray();
 }
 
 internal sealed class FailedResult<T> : Result<T>
 {
 	public override bool IsSuccess => false;
 	public override bool IsCancelled => false;
-	public override IError Error { get; }
+	public override IReadOnlyCollection<IError> Errors { get; }
 
-	public override T Value => Error != null
-		? throw Error.GetException()
+	public override T Value => Errors is { Count: > 0 }
+		? Errors.Count == 1
+			? throw Errors.First().GetException()
+			: throw new AggregateException(Errors.Select(e => e.GetException()))
 		: throw new ResultException("OperationFailed", "Failed result has no value");
 
-	public FailedResult(IError error)
-	{
-		Error = error;
-	}
+	public FailedResult(IError error) => Errors = new[] { error };
+	public FailedResult(IEnumerable<IError> errors) => Errors = errors.ToArray();
+
 }
 
 internal sealed class CancelledResult : Result
 {
-	internal static readonly Error CancelledError = new Error("OperationCancelled", "Operation was cancelled");
+	internal static readonly IReadOnlyCollection<IError> CancelledError = new[] { new Error("OperationCancelled", "Operation was cancelled") };
 	internal static readonly CancelledResult Instance = new();
 
 	public override bool IsSuccess => false;
 	public override bool IsCancelled => true;
-	public override IError Error => CancelledError;
+	public override IReadOnlyCollection<IError> Errors => CancelledError;
 }
 
 internal sealed class CancelledResult<T> : Result<T>
@@ -208,6 +272,6 @@ internal sealed class CancelledResult<T> : Result<T>
 
 	public override bool IsSuccess => false;
 	public override bool IsCancelled => true;
-	public override IError Error => CancelledResult.CancelledError;
-	public override T Value => throw new OperationCanceledException(CancelledResult.CancelledError.Description);
+	public override IReadOnlyCollection<IError> Errors => CancelledResult.CancelledError;
+	public override T Value => throw new OperationCanceledException(CancelledResult.CancelledError.First().Description);
 }

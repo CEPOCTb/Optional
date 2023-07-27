@@ -23,7 +23,8 @@ public static class ResultExtension
 		{
 			null => throw new ArgumentNullException(nameof(result)),
 			{ IsSuccess: true } => result.Value,
-			_ => throw new ResultException(result.Error?.Code ?? "Unknown", result.Error?.Description ?? "Unknown error")
+			{ Errors.Count: > 1 } => throw new ResultAggregateException(result.Errors.Select(error => new ResultException(error.Code ?? "Unknown", error.Description ?? "Unknown error"))),
+			_ => throw new ResultException(result.Errors?.FirstOrDefault()?.Code ?? "Unknown", result.Errors?.FirstOrDefault()?.Description ?? "Unknown error")
 		};
 
 	/// <summary>
@@ -37,7 +38,7 @@ public static class ResultExtension
 		result switch
 		{
 			{ IsCancelled: true } => Result.Cancelled<T>(),
-			{ IsSuccess: false } => Result.Failed<T>(result.Error),
+			{ IsSuccess: false } => Result.Failed<T>(result.Errors),
 			_ => throw new InvalidOperationException("Can't map success result")
 		};
 
@@ -60,6 +61,8 @@ public static class ResultExtension
 	/// Helper extension method to convert exception to failed result
 	/// </summary>
 	/// <param name="e">Exception</param>
+	/// <param name="code">Optional, override error code</param>
+	/// <param name="description">Optional, override error description</param>
 	/// <typeparam name="T">Result value type</typeparam>
 	/// <returns>Failed <see cref="Result{T}"/> instance</returns>
 	public static Result<T> AsFailedResult<T>(this Exception e, string code = null, string description = null) =>
@@ -69,6 +72,8 @@ public static class ResultExtension
 	/// Helper extension method to convert exception to failed result
 	/// </summary>
 	/// <param name="e">Exception</param>
+	/// <param name="code">Optional, override error code</param>
+	/// <param name="description">Optional, override error description</param>
 	/// <returns>Failed <see cref="PK.Result.Result"/> instance</returns>
 	public static Result AsFailedResult(this Exception e, string code = null, string description = null) =>
 		Result.Failed(Error.FromException(e, code, description));
