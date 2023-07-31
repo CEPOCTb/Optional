@@ -23,7 +23,7 @@ public static class ResultExtension
 		{
 			null => throw new ArgumentNullException(nameof(result)),
 			{ IsSuccess: true } => result.Value,
-			{ Errors.Count: > 1 } => throw new ResultAggregateException(result.Errors.Select(error => new ResultException(error.Code ?? "Unknown", error.Description ?? "Unknown error"))),
+			{ Errors.Count: > 1 } => throw new ResultAggregateException(result.Errors.Select(error => error.GetException())),
 			_ => throw new ResultException(result.Errors?.FirstOrDefault()?.Code ?? "Unknown", result.Errors?.FirstOrDefault()?.Description ?? "Unknown error")
 		};
 
@@ -144,4 +144,21 @@ public static class ResultExtension
 			: result.IsSuccess
 				? mapFunc(result.Value).ToSuccessResult()
 				: result.MapNonSuccess<TResult>();
+
+	/// <summary>
+	/// Creates exception from errors of <see cref="Result"/> instance
+	/// </summary>
+	/// <param name="errors">Collection of errors</param>
+	/// <returns>Exception</returns>
+	/// <exception cref="ArgumentNullException">In case of errors parameter is null</exception>
+	/// <exception cref="ResultAggregateException">In case of errors parameter contains more than 1 exception</exception>
+	/// <exception cref="ResultException">In case of errors parameter contains 1 exception or no exceptions</exception>
+	public static Exception GetException(this IReadOnlyCollection<IError> errors) =>
+		errors switch
+		{
+			null => throw new ArgumentNullException(nameof(errors)),
+			{ Count: 1 } => errors.First().GetException(),
+			{ Count: > 1 } => throw new ResultAggregateException(errors.Select(error => error.GetException())),
+			_ => throw new ResultException("Unknown", "Unknown error")
+		};
 }
