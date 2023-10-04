@@ -1,27 +1,29 @@
-using System.Reflection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
+using System.Linq;
 
 namespace PK.Optional.Newtonsoft.Json;
 
-public class OptionalContractResolver : DefaultContractResolver
+public class OptionalContractResolver : IContractResolver
 {
-	#region Overrides of DefaultContractResolver
+	private readonly IContractResolver _resolver;
 
-	/// <inheritdoc />
-	protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+	public OptionalContractResolver(IContractResolver resolver)
 	{
-		var prop = base.CreateProperty(member, memberSerialization);
-		if (!prop.PropertyType.IsOptional())
-		{
-			return prop;
-		}
-
-		prop.Converter = OptionalJsonConverter.Instance;
-		prop.DefaultValueHandling = DefaultValueHandling.Ignore;
-
-		return prop;
+		_resolver = resolver;
 	}
 
-	#endregion
+	/// <inheritdoc />
+	public JsonContract ResolveContract(Type type)
+	{
+		if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>))
+		{
+			return new JsonPrimitiveContract(type.GetGenericArguments().First())
+			{
+				Converter = OptionalJsonConverter.Instance
+			};
+		}
+
+		return _resolver.ResolveContract(type);
+	}
 }
