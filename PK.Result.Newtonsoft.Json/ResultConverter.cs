@@ -56,7 +56,7 @@ public class ResultConverter : JsonConverter<Result>
 
 		var success = false;
 		var cancelled = false;
-		Error error = null;
+		Error[] error = null;
 		object value = null;
 		var type = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : null;
 
@@ -67,11 +67,13 @@ public class ResultConverter : JsonConverter<Result>
 				switch (reader.Path.ToLowerInvariant())
 				{
 					case "issuccess":
+					case "is_success":
 						{
 							success = reader.ReadAsBoolean() ?? false;
 							break;
 						}
 					case "iscancelled":
+					case "is_cancelled":
 						{
 							cancelled = reader.ReadAsBoolean() ?? false;
 							break;
@@ -79,7 +81,7 @@ public class ResultConverter : JsonConverter<Result>
 					case "errors":
 						{
 							reader.Read();
-							error = serializer.Deserialize<Error>(reader);
+							error = serializer.Deserialize<Error[]>(reader);
 							break;
 						}
 					case "value":
