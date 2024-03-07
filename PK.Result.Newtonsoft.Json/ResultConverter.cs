@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Linq;
 
 namespace PK.Result.Newtonsoft.Json;
 
@@ -56,7 +57,7 @@ public class ResultConverter : JsonConverter<Result>
 
 		var success = false;
 		var cancelled = false;
-		Error[] error = null;
+		IError[] error = null;
 		object value = null;
 		var type = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : null;
 
@@ -81,7 +82,7 @@ public class ResultConverter : JsonConverter<Result>
 					case "errors":
 						{
 							reader.Read();
-							error = serializer.Deserialize<Error[]>(reader);
+							error = serializer.Deserialize<Error[]>(reader).Cast<IError>().ToArray();
 							break;
 						}
 					case "value":
