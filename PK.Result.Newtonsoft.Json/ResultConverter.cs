@@ -65,7 +65,7 @@ public class ResultConverter : JsonConverter<Result>
 		{
 			if (reader.TokenType == JsonToken.PropertyName)
 			{
-				switch (reader.Path.ToLowerInvariant())
+				switch (reader.Value.ToString().ToLowerInvariant())
 				{
 					case "issuccess":
 					case "is_success":
@@ -82,7 +82,7 @@ public class ResultConverter : JsonConverter<Result>
 					case "errors":
 						{
 							reader.Read();
-							error = serializer.Deserialize<Error[]>(reader).Cast<IError>().ToArray();
+							error = serializer.Deserialize<Error[]>(reader)?.Cast<IError>().ToArray();
 							break;
 						}
 					case "value":
