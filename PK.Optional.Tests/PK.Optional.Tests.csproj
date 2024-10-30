@@ -22,6 +22,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\PK.Optional.FunctionalExtensions\PK.Optional.FunctionalExtensions.csproj" />
+	  <ProjectReference Include="..\PK.Optional.Newtonsoft.Json\PK.Optional.Newtonsoft.Json.csproj" />
 	  <ProjectReference Include="..\PK.Optional\PK.Optional.csproj" />
 	</ItemGroup>
 
