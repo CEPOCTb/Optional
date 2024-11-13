@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PK.Optional.AspNetCore", "PK.Optional.AspNetCore\PK.Optional.AspNetCore.csproj", "{2B51B9B2-04EE-4D2F-ABFF-C41039BA414D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PK.Result.System.Text.Json", "PK.Result.System.Text.Json\PK.Result.System.Text.Json.csproj", "{8007FDC4-572C-4C23-AD53-70F7F152112B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{2B51B9B2-04EE-4D2F-ABFF-C41039BA414D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B51B9B2-04EE-4D2F-ABFF-C41039BA414D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B51B9B2-04EE-4D2F-ABFF-C41039BA414D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8007FDC4-572C-4C23-AD53-70F7F152112B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8007FDC4-572C-4C23-AD53-70F7F152112B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8007FDC4-572C-4C23-AD53-70F7F152112B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8007FDC4-572C-4C23-AD53-70F7F152112B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
