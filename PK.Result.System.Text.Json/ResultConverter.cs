@@ -20,6 +20,7 @@ public class ResultConverter : JsonConverter<Result>
 		var success = false;
 		var cancelled = false;
 		IError[] error = null;
+		IError[] warnings = null;
 		object value = null;
 		var type = typeToConvert.IsGenericType ? typeToConvert.GetGenericArguments()[0] : null;
 
@@ -50,6 +51,11 @@ public class ResultConverter : JsonConverter<Result>
 						error = JsonSerializer.Deserialize<Error[]>(ref reader)?.Cast<IError>().ToArray();
 						break;
 					}
+					case "warnings":
+					{
+						warnings = JsonSerializer.Deserialize<Error[]>(ref reader)?.Cast<IError>().ToArray();
+						break;
+					}
 					case "value":
 					{
 						if (type != null)
@@ -64,10 +70,14 @@ public class ResultConverter : JsonConverter<Result>
 
 		if (type != null)
 		{
-			return cancelled ? Result.Cancelled(type) : !success ? Result.Failed(error, type) : Result.Success(value, type);
+			return cancelled
+				? Result.Cancelled(type, warnings)
+				: !success
+					? Result.Failed(error, warnings, type)
+					: Result.SuccessWithWarnings(value, warnings, type);
 		}
 
-		return cancelled ? Result.Cancelled() : !success ? Result.Failed(error) : Result.Success();
+		return cancelled ? Result.Cancelled(warnings) : !success ? Result.Failed(error, warnings) : Result.SuccessWithWarnings(warnings);
 	}
 
 	/// <inheritdoc />
@@ -93,6 +103,12 @@ public class ResultConverter : JsonConverter<Result>
 				writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName("Value") ?? "Value");
 				writer.WriteRawValue(JsonSerializer.SerializeToUtf8Bytes(val, options));
 			}
+		}
+
+		if (value.Warnings != null || options.DefaultIgnoreCondition != JsonIgnoreCondition.Never)
+		{
+			writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName(nameof(Result.Warnings)) ?? nameof(Result.Warnings));
+			writer.WriteRawValue(JsonSerializer.SerializeToUtf8Bytes(value.Warnings, options));
 		}
 
 		writer.WriteEndObject();

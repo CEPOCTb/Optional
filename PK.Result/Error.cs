@@ -45,4 +45,14 @@ public class Error : IError
 				null => e.Message,
 				_ => description
 			}) { _exception = e };
+
+	/// <summary>
+	/// Creates a new instance of an <see cref="IError"/> object with the specified code, description, and optional data.
+	/// </summary>
+	/// <param name="code">The error code.</param>
+	/// <param name="description">The error description.</param>
+	/// <param name="data">Additional associated data as a dictionary (optional).</param>
+	/// <returns>An instance of an <see cref="IError"/> representing the specified error details.</returns>
+	public static IError Create(string code, string description, IDictionary<object, object> data = null) =>
+		new Error(code, description, data);
 }

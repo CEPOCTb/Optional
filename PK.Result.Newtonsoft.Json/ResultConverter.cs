@@ -44,6 +44,12 @@ public class ResultConverter : JsonConverter<Result>
 			}
 		}
 
+		if (value.Warnings != null || serializer.DefaultValueHandling != DefaultValueHandling.Ignore)
+		{
+			writer.WritePropertyName(_namingStrategy?.GetPropertyName(nameof(Result.Warnings), false) ?? nameof(Result.Warnings));
+				serializer.Serialize(writer, value.Warnings);
+		}
+
 		writer.WriteEndObject();
 	}
 
@@ -58,6 +64,7 @@ public class ResultConverter : JsonConverter<Result>
 		var success = false;
 		var cancelled = false;
 		IError[] error = null;
+		IError[] warnings = null;
 		object value = null;
 		var type = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : null;
 
@@ -85,6 +92,12 @@ public class ResultConverter : JsonConverter<Result>
 							error = serializer.Deserialize<Error[]>(reader)?.Cast<IError>().ToArray();
 							break;
 						}
+					case "warnings":
+						{
+							reader.Read();
+							warnings = serializer.Deserialize<Error[]>(reader)?.Cast<IError>().ToArray();
+							break;
+						}
 					case "value":
 						{
 							if (reader.Read() && type != null)
@@ -99,10 +112,14 @@ public class ResultConverter : JsonConverter<Result>
 
 		if (type != null)
 		{
-			return cancelled ? Result.Cancelled(type) : !success ? Result.Failed(error, type) : Result.Success(value, type);
+			return cancelled
+				? Result.Cancelled(type, warnings)
+				: !success
+					? Result.Failed(error, warnings, type)
+					: Result.SuccessWithWarnings(value, warnings, type);
 		}
 
-		return cancelled ? Result.Cancelled() : !success ? Result.Failed(error) : Result.Success();
+		return cancelled ? Result.Cancelled(warnings) : !success ? Result.Failed(error, warnings) : Result.SuccessWithWarnings(warnings);
 	}
 
 	#endregion
