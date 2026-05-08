@@ -15,7 +15,7 @@ public class OptionalJsonConverter : JsonConverter
 	/// <inheritdoc />
 	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 	{
-		writer.WriteValue(Optional.GetValue(value));
+		serializer.Serialize(writer, Optional.GetValue(value));
 	}
 
 	/// <inheritdoc />
