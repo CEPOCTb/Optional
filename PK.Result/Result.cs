@@ -117,7 +117,9 @@ public abstract class Result
 			throw new ArgumentNullException(nameof(resultType), "Can't determine type. resultType must be specified for null result value");
 		}
 
-		return Activator.CreateInstance(typeof(SuccessResult<>).MakeGenericType(resultType ?? result.GetType()), result, warning) as Result;
+		return warning != null
+			? Activator.CreateInstance(typeof(SuccessResult<>).MakeGenericType(resultType ?? result.GetType()), result, warning) as Result
+			: Activator.CreateInstance(typeof(SuccessResult<>).MakeGenericType(resultType ?? result.GetType()), result) as Result;
 	}
 
 	/// <summary>
@@ -134,7 +136,9 @@ public abstract class Result
 			throw new ArgumentNullException(nameof(resultType), "Can't determine type. resultType must be specified for null result value");
 		}
 
-		return Activator.CreateInstance(typeof(SuccessResult<>).MakeGenericType(resultType ?? result.GetType()), result, warnings) as Result;
+		return warnings != null
+			? Activator.CreateInstance(typeof(SuccessResult<>).MakeGenericType(resultType ?? result.GetType()), result, warnings) as Result
+			: Activator.CreateInstance(typeof(SuccessResult<>).MakeGenericType(resultType ?? result.GetType()), result) as Result;
 	}
 	/// <summary>
 	/// Returns failed result
@@ -209,7 +213,9 @@ public abstract class Result
 			throw new ArgumentNullException(nameof(resultType), "Can't determine type. resultType must be specified");
 		}
 
-		return Activator.CreateInstance(typeof(FailedResult<>).MakeGenericType(resultType), error) as Result;
+		return error != null
+			? Activator.CreateInstance(typeof(FailedResult<>).MakeGenericType(resultType), error) as Result
+			: Activator.CreateInstance(typeof(FailedResult<>).MakeGenericType(resultType), Enumerable.Empty<IError>()) as Result;
 	}
 
 	/// <summary>
@@ -225,7 +231,7 @@ public abstract class Result
 			throw new ArgumentNullException(nameof(resultType), "Can't determine type. resultType must be specified");
 		}
 
-		return Activator.CreateInstance(typeof(FailedResult<>).MakeGenericType(resultType), errors) as Result;
+		return Activator.CreateInstance(typeof(FailedResult<>).MakeGenericType(resultType), errors ?? Enumerable.Empty<IError>()) as Result;
 	}
 
 	/// <summary>
@@ -354,7 +360,9 @@ public abstract class Result
 			throw new ArgumentNullException(nameof(resultType), "Can't determine type. resultType must be specified");
 		}
 
-		return Activator.CreateInstance(typeof(CancelledResult<>).MakeGenericType(resultType), warning) as Result;
+		return warning != null
+			? Activator.CreateInstance(typeof(CancelledResult<>).MakeGenericType(resultType), warning) as Result
+			: Activator.CreateInstance(typeof(CancelledResult<>).MakeGenericType(resultType)) as Result;
 	}
 
 	/// <summary>
@@ -370,7 +378,9 @@ public abstract class Result
 			throw new ArgumentNullException(nameof(resultType), "Can't determine type. resultType must be specified");
 		}
 
-		return Activator.CreateInstance(typeof(CancelledResult<>).MakeGenericType(resultType), warnings) as Result;
+		return warnings != null
+			? Activator.CreateInstance(typeof(CancelledResult<>).MakeGenericType(resultType), warnings) as Result
+			: Activator.CreateInstance(typeof(CancelledResult<>).MakeGenericType(resultType)) as Result;
 	}
 
 }
